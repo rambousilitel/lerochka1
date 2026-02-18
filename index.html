@@ -11,7 +11,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Permanent+Marker&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Space+Mono:wght@400;700&family=Caveat:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Permanent+Marker&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -21,24 +21,17 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --paper: #F2EDE8;
-      --concrete: #D5CFC7;
+      --bg: #F5F0E8;
       --black: #0A0A0A;
       --red: #E60012;
-      --red-bright: #FF0000;
-      --red-glow: rgba(230, 0, 18, 0.6);
-      --pink: #FF2D7B;
+      --red-glow: #FF0000;
       --acid: #E8FF00;
-      --cyan: #00E5FF;
-      --orange: #FF6B00;
       --white: #FFFFFF;
-      --grey: #999;
-      --font-condensed: 'Bebas Neue', 'Anton', sans-serif;
-      --font-graffiti: 'Permanent Marker', cursive;
-      --font-hand: 'Caveat', cursive;
+      --grey: #888;
+      --font-heading: 'Bebas Neue', sans-serif;
       --font-serif: 'Playfair Display', serif;
+      --font-marker: 'Permanent Marker', cursive;
       --font-mono: 'Space Mono', monospace;
-      --font-body: 'Inter', sans-serif;
     }
 
     html { overflow-x: hidden; scroll-behavior: smooth; }
@@ -48,154 +41,65 @@
     }
 
     body {
-      font-family: var(--font-body);
-      background: var(--paper);
+      font-family: var(--font-serif);
+      background: var(--bg);
       color: var(--black);
       overflow-x: hidden;
       cursor: none;
     }
 
-    /* ===== NOISE / WALL TEXTURE ===== */
-    .noise {
+    /* ===== GRAIN TEXTURE ===== */
+    body::after {
+      content: '';
       position: fixed; inset: 0;
-      pointer-events: none; z-index: 9990;
-      opacity: 0.06;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: 256px;
     }
 
     /* ===== CURSOR ===== */
-    .cursor-ring {
-      width: 28px; height: 28px;
-      border: 2px solid var(--red);
-      border-radius: 50%;
+    .cursor {
+      width: 20px; height: 20px;
+      background: var(--red); border-radius: 50%;
       position: fixed; pointer-events: none; z-index: 10000;
       transform: translate(-50%, -50%);
-      transition: width 0.25s, height 0.25s, background 0.25s;
       mix-blend-mode: exclusion;
+      transition: width 0.3s, height 0.3s;
     }
-    .cursor-ring.hovering { width: 60px; height: 60px; background: var(--red); opacity: 0.4; }
-    .cursor-spray {
-      width: 6px; height: 6px; background: var(--red); border-radius: 50%;
-      position: fixed; pointer-events: none; z-index: 10001;
-      transform: translate(-50%, -50%);
-    }
-    @media (max-width: 768px) {
-      .cursor-ring, .cursor-spray { display: none; }
-      body { cursor: auto; }
-    }
+    .cursor.hover { width: 50px; height: 50px; opacity: 0.5; }
+    @media (max-width: 768px) { .cursor { display: none; } body { cursor: auto; } }
 
-    /* ===== LOADER ===== */
-    .loader {
-      position: fixed; inset: 0; background: var(--black); z-index: 9999;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .loader-text {
-      font-family: var(--font-graffiti);
-      font-size: clamp(60px, 15vw, 180px);
-      color: var(--red);
-      text-shadow: 4px 4px 0 var(--acid), -2px -2px 0 var(--cyan);
-    }
-
-    /* ===== GRAFFITI SVG ELEMENTS ===== */
-    .graffiti {
-      position: absolute;
-      pointer-events: none;
-      z-index: 15;
-    }
-
-    /* Spray splatter dots */
-    .spray-dots {
-      position: absolute;
-      pointer-events: none;
-      z-index: 14;
-    }
-    .spray-dots span {
+    /* ===== RED GLOW ===== */
+    .red-glow {
       position: absolute;
       border-radius: 50%;
-      background: var(--red);
-    }
-
-    /* Paint drip */
-    .drip {
-      position: absolute;
-      width: 6px;
-      background: var(--red);
-      border-radius: 0 0 3px 3px;
-      z-index: 15;
+      background: var(--red-glow);
+      filter: blur(80px);
+      opacity: 0.3;
       pointer-events: none;
     }
-    .drip::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 8px;
-      height: 8px;
-      background: inherit;
-      border-radius: 50%;
-    }
-    .drip--acid { background: var(--acid); }
-    .drip--cyan { background: var(--cyan); }
-    .drip--white { background: var(--white); }
-    .drip--pink { background: var(--pink); }
 
-    /* Spray underline */
-    .spray-underline {
+    /* ===== HIGHLIGHT BRUSH ===== */
+    .highlight-brush {
       position: relative;
       display: inline;
     }
-    .spray-underline::after {
+    .highlight-brush::before {
       content: '';
       position: absolute;
-      bottom: -4px; left: -8px; right: -8px;
-      height: 12px;
+      bottom: 0; left: -5%;
+      width: 110%; height: 40%;
       background: var(--red);
-      opacity: 0.7;
-      border-radius: 40% 60% 50% 40%;
-      transform: rotate(-1deg);
+      opacity: 0.8;
       z-index: -1;
+      transform: rotate(-1deg) skewX(-5deg);
     }
 
-    /* Tag / sticker style */
-    .graffiti-tag {
-      font-family: var(--font-graffiti);
-      position: absolute;
-      pointer-events: none;
-      z-index: 16;
-      text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
-    }
-
-    /* Spray circle (like sprayed through a stencil) */
-    .spray-circle {
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 14;
-      box-shadow:
-        inset 0 0 20px rgba(0,0,0,0.1),
-        0 0 8px currentColor;
-      opacity: 0.4;
-    }
-
-    /* Cross out / strikethrough spray */
-    .spray-cross {
-      position: absolute;
-      pointer-events: none;
-      z-index: 16;
-    }
-    .spray-cross svg { overflow: visible; }
-
-    /* Stencil text (cut-out look) */
-    .stencil {
-      font-family: var(--font-condensed);
-      text-transform: uppercase;
-      letter-spacing: 6px;
-      position: absolute;
-      pointer-events: none;
-      z-index: 14;
-      opacity: 0.08;
+    /* ===== SVG DRAW ===== */
+    .svg-draw path, .svg-draw ellipse, .svg-draw circle, .svg-draw line {
+      stroke-dasharray: var(--len, 300);
+      stroke-dashoffset: var(--len, 300);
     }
 
     /* ===== NAV ===== */
@@ -206,22 +110,19 @@
       mix-blend-mode: difference;
     }
     .nav-logo {
-      font-family: var(--font-graffiti);
-      font-size: 28px; color: var(--white);
-      text-decoration: none;
-      text-shadow: 2px 2px 0 var(--red);
+      font-family: var(--font-heading);
+      font-size: 32px; color: var(--white);
+      text-decoration: none; letter-spacing: 2px;
     }
-    .nav-right { display: flex; align-items: center; gap: 32px; }
-    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
     .nav-links a {
-      font-family: var(--font-mono); font-size: 11px;
-      text-transform: uppercase; letter-spacing: 1px;
+      font-family: var(--font-serif); font-size: 14px; font-style: italic;
       color: var(--white); text-decoration: none; opacity: 0.6;
       transition: opacity 0.3s;
     }
     .nav-links a:hover { opacity: 1; }
     .nav-contact {
-      font-family: var(--font-graffiti); font-size: 14px;
+      font-family: var(--font-marker); font-size: 14px;
       color: var(--black); background: var(--acid);
       padding: 10px 24px; text-decoration: none;
       transform: rotate(-2deg);
@@ -237,406 +138,68 @@
     .hero {
       min-height: 100vh;
       position: relative;
-      display: flex; flex-direction: column; justify-content: center;
-      align-items: center;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
       padding: 120px 40px 80px;
-      overflow: hidden;
-      background: var(--paper);
+      overflow: visible;
+      background: var(--bg);
     }
-
-    /* Concrete wall texture overlay */
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        repeating-linear-gradient(90deg, transparent, transparent 200px, rgba(0,0,0,0.01) 200px, rgba(0,0,0,0.01) 201px),
-        repeating-linear-gradient(0deg, transparent, transparent 150px, rgba(0,0,0,0.008) 150px, rgba(0,0,0,0.008) 151px);
-      pointer-events: none;
-    }
-
-    .red-glow {
-      position: absolute; border-radius: 50%;
-      background: var(--red-bright); filter: blur(80px);
-      opacity: 0.2; pointer-events: none;
-    }
-    .rg-1 { width: 400px; height: 400px; top: -80px; right: -30px; }
-    .rg-2 { width: 250px; height: 250px; bottom: 15%; left: -60px; opacity: 0.12; }
-
-    .hero-content { position: relative; z-index: 10; text-align: center; }
 
     .hero-title {
-      font-family: var(--font-graffiti);
-      font-size: clamp(80px, 18vw, 260px);
-      line-height: 0.9;
+      font-family: var(--font-heading);
+      font-size: clamp(100px, 18vw, 280px);
+      line-height: 0.85; letter-spacing: -2px;
       color: var(--black);
-      position: relative;
-      text-shadow: 6px 6px 0 var(--red), -3px -3px 0 var(--cyan);
-      letter-spacing: -2px;
+      text-align: center;
+      text-transform: uppercase;
+      position: relative; z-index: 10;
     }
-    .hero-title .line { display: block; overflow: hidden; }
-    .hero-title .line-inner { display: block; transform: translateY(110%); }
+    .hero-title .letter {
+      display: inline-block;
+      transform: translateY(110%);
+      opacity: 0;
+    }
 
     .hero-subtitle {
-      font-family: var(--font-condensed);
-      font-size: clamp(24px, 4vw, 48px);
-      letter-spacing: 8px;
-      text-transform: uppercase;
+      font-family: var(--font-marker);
+      font-size: clamp(18px, 3vw, 32px);
       color: var(--red);
+      transform: rotate(-3deg);
       margin-top: 16px;
+      position: relative; z-index: 10;
     }
 
     .hero-meta {
-      font-family: var(--font-mono); font-size: 11px;
-      text-transform: uppercase; letter-spacing: 3px;
-      color: var(--grey); margin-top: 48px;
-      display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
-    }
-    .hero-meta span { padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
-
-    /* Scattered spray elements on hero */
-    .hero-spray-1 {
-      position: absolute; top: 8%; left: 5%;
-      width: 180px; height: 180px;
-      border: 4px solid var(--red);
-      border-radius: 50%;
-      opacity: 0.15;
-      z-index: 5;
-    }
-    .hero-spray-2 {
-      position: absolute; bottom: 12%; right: 8%;
-      font-family: var(--font-graffiti);
-      font-size: 120px;
-      color: var(--acid);
-      opacity: 0.08;
-      transform: rotate(15deg);
-      z-index: 5;
-    }
-    .hero-arrow-svg {
-      position: absolute;
-      z-index: 15;
-    }
-
-    /* ===== SECTIONS ===== */
-    .section-padding { padding: 120px 40px; }
-    .container { max-width: 1400px; margin: 0 auto; }
-
-    .section-label {
-      font-family: var(--font-mono); font-size: 11px; font-weight: 400;
-      text-transform: uppercase; letter-spacing: 4px;
-      color: var(--grey); margin-bottom: 20px;
-    }
-
-    /* ===== MANIFEST ===== */
-    .manifest {
-      position: relative; padding: 160px 40px 120px;
-      overflow: hidden; background: var(--black); color: var(--white);
-    }
-    /* Wall brick pattern */
-    .manifest::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        repeating-linear-gradient(90deg, transparent, transparent 120px, rgba(255,255,255,0.015) 120px, rgba(255,255,255,0.015) 121px),
-        repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(255,255,255,0.01) 60px, rgba(255,255,255,0.01) 61px);
-      pointer-events: none;
-    }
-
-    .manifest-container {
-      max-width: 1200px; margin: 0 auto;
-      display: grid; grid-template-columns: 1.3fr 1fr;
-      gap: 80px; align-items: start;
-      position: relative; z-index: 2;
-    }
-    .manifest-label { color: var(--red); }
-    .manifest-quote {
-      font-family: var(--font-serif); font-weight: 900; font-style: italic;
-      font-size: clamp(28px, 4vw, 52px); line-height: 1.15;
-      color: var(--white); position: relative;
-    }
-    .manifest-quote .red { color: var(--red); }
-    .manifest-body {
-      font-family: var(--font-body); font-size: 16px; line-height: 1.7;
-      color: rgba(255,255,255,0.45); margin-top: 32px; max-width: 520px;
-    }
-
-    .manifest-collage { position: relative; min-height: 500px; }
-    .manifest-img {
-      position: absolute; border: 3px solid rgba(255,255,255,0.1);
-      overflow: hidden; transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
-    }
-    .manifest-img:hover { transform: scale(1.05) !important; z-index: 5; }
-    .manifest-img-inner { width: 100%; height: 100%; background-size: cover; background-position: center; }
-    .mi-1 { width: 260px; height: 340px; top: 0; left: 0; transform: rotate(-4deg); }
-    .mi-1 .manifest-img-inner { background: linear-gradient(145deg, #1a1a2e, #0a0a15); }
-    .mi-2 { width: 200px; height: 250px; top: 60px; right: 0; transform: rotate(5deg); }
-    .mi-2 .manifest-img-inner { background: linear-gradient(135deg, var(--red), #8b0000); }
-    .mi-3 { width: 180px; height: 120px; bottom: 40px; left: 40px; transform: rotate(2deg); }
-    .mi-3 .manifest-img-inner { background: linear-gradient(135deg, #333, #111); }
-
-    /* Graffiti on manifest wall */
-    .manifest-graffiti-big {
-      position: absolute;
-      font-family: var(--font-graffiti);
-      font-size: clamp(100px, 15vw, 200px);
-      color: var(--red);
-      opacity: 0.04;
-      top: 10%; right: 5%;
-      transform: rotate(-8deg);
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    /* ===== SERVICES ===== */
-    .services {
-      background: var(--paper); color: var(--black);
-      padding: 120px 40px; position: relative; overflow: hidden;
-    }
-    .services-header { max-width: 1400px; margin: 0 auto 64px; position: relative; }
-    .services-title {
-      font-family: var(--font-graffiti);
-      font-size: clamp(48px, 9vw, 120px);
-      color: var(--black); text-transform: uppercase; line-height: 1;
-      text-shadow: 3px 3px 0 var(--red);
-      position: relative; display: inline-block;
-    }
-
-    .services-grid {
-      max-width: 1400px; margin: 0 auto;
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 3px; background: rgba(0,0,0,0.06);
-    }
-    .service-card {
-      position: relative; overflow: hidden;
-      background: var(--paper); padding: 0;
-      transition: transform 0.4s; cursor: none;
-    }
-    .service-card:hover { transform: scale(1.02); z-index: 2; }
-    .sc-1 { grid-row: span 2; }
-    .sc-4 { grid-column: span 2; }
-
-    .service-card-img { width: 100%; height: 200px; position: relative; overflow: hidden; }
-    .sc-1 .service-card-img { height: 100%; min-height: 300px; }
-    .sc-4 .service-card-img { height: 240px; }
-    .service-card-img-inner {
-      width: 100%; height: 100%; background-size: cover; background-position: center;
-      transition: transform 0.6s;
-    }
-    .service-card:hover .service-card-img-inner { transform: scale(1.1); }
-    .service-card-img-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 20%, rgba(10,10,10,0.85) 100%);
-    }
-    .service-card-glow {
-      position: absolute; inset: 0;
-      background: radial-gradient(circle, var(--red-glow), transparent 70%);
-      opacity: 0; transition: opacity 0.4s; pointer-events: none;
-    }
-    .service-card:hover .service-card-glow { opacity: 0.2; }
-
-    .service-card-content { padding: 32px; position: relative; }
-    .sc-1 .service-card-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px; }
-    .sc-1 .service-card-content, .sc-1 .service-card-title, .sc-1 .service-card-desc { color: var(--white); }
-
-    .service-card-num {
-      font-family: var(--font-graffiti); font-size: 48px;
-      color: rgba(0,0,0,0.04); position: absolute; top: 8px; right: 12px;
-    }
-    .sc-1 .service-card-num { color: rgba(255,255,255,0.06); }
-    .service-card-title {
-      font-family: var(--font-graffiti); font-size: 24px;
-      margin-bottom: 10px; color: var(--black);
-    }
-    .service-card-desc { font-size: 14px; color: rgba(10,10,10,0.45); line-height: 1.5; }
-    .sc-1 .service-card-desc { color: rgba(255,255,255,0.4); }
-
-    /* ===== CASES ===== */
-    .cases {
-      background: var(--black); color: var(--white);
-      padding: 120px 40px; position: relative; overflow: hidden;
-    }
-    /* Brick wall */
-    .cases::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(255,255,255,0.012) 100px, rgba(255,255,255,0.012) 101px),
-        repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.008) 50px, rgba(255,255,255,0.008) 51px);
-      pointer-events: none;
-    }
-
-    .cases-header { max-width: 1400px; margin: 0 auto 64px; position: relative; z-index: 2; }
-    .cases-title {
-      font-family: var(--font-graffiti);
-      font-size: clamp(60px, 12vw, 160px);
-      color: var(--white); line-height: 0.9;
-      text-shadow: 4px 4px 0 var(--red), -2px -2px 0 var(--cyan);
-    }
-
-    .cases-masonry {
-      max-width: 1400px; margin: 0 auto; position: relative; z-index: 2;
-      display: grid; grid-template-columns: repeat(12, 1fr);
-      grid-auto-rows: 60px; gap: 16px;
-    }
-    .case-item {
-      position: relative; overflow: hidden;
-      border: 2px solid rgba(255,255,255,0.08);
-      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s;
-      cursor: none;
-    }
-    .case-item:hover {
-      transform: translateY(-6px) rotate(-0.5deg);
-      box-shadow: 8px 8px 0 var(--red);
-      z-index: 10;
-    }
-    .case-item-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.6s; }
-    .case-item:hover .case-item-bg { transform: scale(1.08); }
-    .case-item-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.2) 50%, transparent 100%);
-    }
-    .case-item-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; }
-    .case-item-title {
-      font-family: var(--font-graffiti); font-size: 22px;
-      color: var(--white); margin-bottom: 6px;
-    }
-    .case-item-cat {
+      position: absolute; z-index: 10;
       font-family: var(--font-mono); font-size: 10px;
-      text-transform: uppercase; letter-spacing: 2px; color: var(--grey);
-    }
-    .case-item-metric {
-      position: absolute; top: 16px; right: 16px;
-      font-family: var(--font-graffiti); font-size: 22px;
-      color: var(--acid); transform: rotate(5deg);
-      text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
-    }
-
-    .ci-a { grid-column: 1 / 8; grid-row: span 6; }
-    .ci-b { grid-column: 8 / 13; grid-row: span 4; }
-    .ci-c { grid-column: 8 / 13; grid-row: span 5; }
-    .ci-d { grid-column: 1 / 5; grid-row: span 4; }
-    .ci-e { grid-column: 5 / 13; grid-row: span 5; }
-    .ci-a .case-item-bg { background: linear-gradient(135deg, #0a0a15, #1a1a2e, #2d1b4e); }
-    .ci-b .case-item-bg { background: linear-gradient(135deg, var(--red), #8b0000); }
-    .ci-c .case-item-bg { background: linear-gradient(135deg, #111, #2a2a2a); }
-    .ci-d .case-item-bg { background: linear-gradient(135deg, #0d1117, #161b22); }
-    .ci-e .case-item-bg { background: linear-gradient(160deg, #1a0000, #3d0000, #0a0a0a); }
-
-    /* ===== RESULTS ===== */
-    .results {
-      background: var(--paper); color: var(--black);
-      padding: 120px 40px; position: relative; overflow: hidden;
-    }
-    .results-bg-text {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%) rotate(-5deg);
-      font-family: var(--font-graffiti);
-      font-size: clamp(120px, 25vw, 350px);
-      color: var(--red); opacity: 0.04;
-      white-space: nowrap; pointer-events: none;
-    }
-    .results-container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
-    .results-title {
-      font-family: var(--font-graffiti);
-      font-size: clamp(48px, 8vw, 100px);
-      text-shadow: 3px 3px 0 var(--red);
-      margin-bottom: 64px;
-    }
-    .results-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
-    .result-item {
-      text-align: center; padding: 40px 24px;
-      background: var(--white); position: relative;
-      border: 2px solid var(--black);
-      transition: transform 0.4s, box-shadow 0.3s;
-    }
-    .result-item:nth-child(odd) { transform: rotate(-1.5deg); }
-    .result-item:nth-child(even) { transform: rotate(1.5deg); }
-    .result-item:hover {
-      transform: rotate(0deg) scale(1.05) !important;
-      box-shadow: 6px 6px 0 var(--red);
-      z-index: 5;
-    }
-    .result-num {
-      font-family: var(--font-graffiti); font-size: clamp(40px, 5vw, 64px);
-      line-height: 1; color: var(--red);
-    }
-    .result-label {
-      font-family: var(--font-mono); font-size: 11px;
-      text-transform: uppercase; letter-spacing: 2px;
-      color: var(--grey); margin-top: 12px;
-    }
-
-    /* ===== CTA ===== */
-    .cta {
-      background: var(--red); color: var(--white);
-      padding: 200px 40px; position: relative; overflow: hidden;
-      text-align: center;
-    }
-    /* Spray texture overlay */
-    .cta::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 40%),
-        radial-gradient(circle at 80% 60%, rgba(0,0,0,0.1) 0%, transparent 40%);
-      pointer-events: none;
-    }
-    .cta-content { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; }
-    .cta-title {
-      font-family: var(--font-graffiti);
-      font-size: clamp(40px, 8vw, 110px);
-      line-height: 1;
-      text-shadow: 4px 4px 0 rgba(0,0,0,0.3);
-      margin-bottom: 32px;
-    }
-    .cta-title .acid { color: var(--acid); text-shadow: 3px 3px 0 rgba(0,0,0,0.4); }
-    .cta-sub {
-      font-family: var(--font-mono); font-size: 13px;
       text-transform: uppercase; letter-spacing: 3px;
-      color: rgba(255,255,255,0.5); margin-bottom: 48px;
+      color: var(--grey);
     }
-    .cta-btn {
-      display: inline-block;
-      font-family: var(--font-graffiti); font-size: 28px;
-      color: var(--red); background: var(--acid);
-      padding: 24px 64px; text-decoration: none;
-      transform: rotate(-2deg);
-      transition: transform 0.4s, box-shadow 0.4s;
-      cursor: none;
-      box-shadow: 6px 6px 0 var(--black);
-    }
-    .cta-btn:hover {
-      transform: rotate(1deg) scale(1.08);
-      box-shadow: 10px 10px 0 var(--black);
-    }
-    .cta-contacts {
-      margin-top: 48px;
-      display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
-    }
-    .cta-contacts a {
-      font-family: var(--font-mono); font-size: 12px;
-      text-transform: uppercase; letter-spacing: 2px;
-      color: rgba(255,255,255,0.4); text-decoration: none;
-      transition: color 0.3s;
-    }
-    .cta-contacts a:hover { color: var(--acid); }
+    .hero-meta--tl { top: 100px; left: 40px; }
+    .hero-meta--tr { top: 100px; right: 40px; }
+    .hero-meta--bl { bottom: 40px; left: 40px; }
+    .hero-meta--br { bottom: 40px; right: 40px; }
 
-    /* ===== FOOTER ===== */
-    .footer {
-      background: var(--black); padding: 32px 40px;
-      border-top: 3px solid var(--red);
+    /* Photo collage placeholders */
+    .hero-collage { position: absolute; inset: 0; z-index: 5; overflow: visible; }
+    .hero-photo {
+      position: absolute;
+      background: linear-gradient(135deg, #333, #666);
+      overflow: hidden;
     }
-    .footer-inner {
-      max-width: 1400px; margin: 0 auto;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .footer-logo {
-      font-family: var(--font-graffiti); font-size: 20px;
-      color: var(--white); text-decoration: none;
-      text-shadow: 2px 2px 0 var(--red);
-    }
-    .footer-copy {
-      font-family: var(--font-mono); font-size: 10px;
-      color: rgba(255,255,255,0.15); text-transform: uppercase; letter-spacing: 1px;
+    .hp-1 { width: 220px; height: 300px; top: 12%; left: 5%; transform: rotate(-5deg); }
+    .hp-2 { width: 180px; height: 180px; top: 20%; right: 8%; transform: rotate(4deg); }
+    .hp-3 { width: 260px; height: 170px; bottom: 15%; right: 15%; transform: rotate(-2deg); }
+    .hp-4 { width: 140px; height: 200px; bottom: 20%; left: 12%; transform: rotate(6deg); }
+    .hp-1 .hp-inner { background: linear-gradient(145deg, #1a1a2e, #16213e); }
+    .hp-2 .hp-inner { background: linear-gradient(135deg, var(--red), #8b0000); }
+    .hp-3 .hp-inner { background: linear-gradient(135deg, #2d1b4e, #1a0a2e); }
+    .hp-4 .hp-inner { background: linear-gradient(160deg, #0d1117, #333); }
+    .hp-inner { width: 100%; height: 100%; }
+
+    /* SVG arrow pointing to CTA */
+    .hero-arrow {
+      position: absolute; z-index: 15;
+      bottom: 25%; right: 30%;
     }
 
     /* ===== GLITCH ===== */
@@ -645,14 +208,16 @@
       content: attr(data-text);
       position: absolute; top: 0; left: 0;
       width: 100%; height: 100%; opacity: 0;
+      font-family: inherit; font-size: inherit; line-height: inherit;
+      letter-spacing: inherit; text-transform: inherit;
     }
-    .glitch::before { color: var(--cyan); }
+    .glitch::before { color: #0ff; }
     .glitch::after { color: var(--red); }
     .glitch.active::before { animation: g1 0.3s ease; opacity: 0.7; }
     .glitch.active::after { animation: g2 0.3s ease 0.05s; opacity: 0.7; }
     @keyframes g1 {
-      0% { clip-path: inset(20% 0 60% 0); transform: translate(-4px, 2px); opacity: 0.8; }
-      50% { clip-path: inset(50% 0 20% 0); transform: translate(4px, -2px); opacity: 0.8; }
+      0% { clip-path: inset(20% 0 60% 0); transform: translate(-3px, 2px); opacity: 0.8; }
+      50% { clip-path: inset(50% 0 20% 0); transform: translate(3px, -2px); opacity: 0.8; }
       100% { clip-path: inset(0); transform: translate(0); opacity: 0; }
     }
     @keyframes g2 {
@@ -661,56 +226,410 @@
       100% { clip-path: inset(0); transform: translate(0); opacity: 0; }
     }
 
+    /* ===== MARQUEE ===== */
+    .marquee {
+      background: var(--black);
+      padding: 18px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-track {
+      display: inline-flex;
+      animation: marquee-scroll 20s linear infinite;
+    }
+    .marquee-text {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--white);
+      padding: 0 8px;
+    }
+    @keyframes marquee-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-33.333%); }
+    }
+
+    /* ===== MANIFEST ===== */
+    .manifest {
+      position: relative;
+      padding: 160px 40px 120px;
+      overflow: visible;
+      background: var(--bg);
+    }
+    .manifest-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1.2fr;
+      gap: 80px; align-items: start;
+      position: relative;
+    }
+
+    .manifest-photo {
+      position: relative;
+      width: 100%; aspect-ratio: 3/4;
+      background: linear-gradient(145deg, #1a1a2e, #0a0a15);
+      transform: rotate(2deg);
+      box-shadow: 8px 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .manifest-text { position: relative; }
+    .manifest-quote {
+      font-family: var(--font-serif);
+      font-size: clamp(24px, 3.5vw, 40px);
+      font-weight: 400; font-style: normal;
+      line-height: 1.3;
+      color: var(--black);
+    }
+    .manifest-quote em { font-style: italic; }
+
+    /* SVG wavy underline under key phrase */
+    .manifest-underline {
+      position: relative; display: inline;
+    }
+    .manifest-underline svg {
+      position: absolute;
+      bottom: -8px; left: -5%; width: 110%; height: 20px;
+    }
+
+    .manifest-annotation {
+      font-family: var(--font-marker);
+      font-size: 18px;
+      color: var(--red);
+      position: absolute;
+      right: -40px; bottom: -40px;
+      transform: rotate(3deg);
+      white-space: nowrap;
+    }
+
+    /* ===== SERVICES ===== */
+    .services {
+      background: var(--black);
+      color: var(--white);
+      padding: 120px 40px;
+      position: relative; overflow: hidden;
+    }
+    /* Dark section texture */
+    .services::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .services-header {
+      max-width: 1400px; margin: 0 auto 64px;
+      position: relative; z-index: 2;
+    }
+    .services-title {
+      font-family: var(--font-heading);
+      font-size: clamp(60px, 12vw, 160px);
+      text-transform: uppercase;
+      line-height: 0.9;
+      color: var(--white);
+    }
+
+    .services-grid {
+      max-width: 1400px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 12px;
+      position: relative; z-index: 2;
+    }
+    .service-card {
+      background: #1A1A1A;
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s, box-shadow 0.4s;
+      cursor: none;
+    }
+    .service-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 40px rgba(230, 0, 18, 0.15);
+      z-index: 5;
+    }
+    .sc-1 { grid-row: span 2; }
+    .sc-4 { grid-column: span 2; }
+
+    .service-card-title {
+      font-family: var(--font-serif);
+      font-size: 24px; font-weight: 700;
+      color: var(--white);
+      margin-bottom: 12px;
+    }
+    .service-card-desc {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.6;
+    }
+    .service-card-glow {
+      position: absolute; inset: 0;
+      border: 2px solid transparent;
+      transition: border-color 0.4s;
+    }
+    .service-card:hover .service-card-glow {
+      border-color: rgba(230, 0, 18, 0.4);
+      box-shadow: inset 0 0 30px rgba(230, 0, 18, 0.08);
+    }
+
+    /* Hand-written annotation over services */
+    .services-annotation {
+      font-family: var(--font-marker);
+      font-size: clamp(20px, 3vw, 32px);
+      color: var(--red);
+      position: absolute;
+      bottom: 60px; right: 60px;
+      transform: rotate(4deg);
+      z-index: 10;
+    }
+
+    /* ===== CASES ===== */
+    .cases {
+      background: var(--bg);
+      padding: 120px 0;
+      position: relative; overflow: hidden;
+    }
+    .cases-header {
+      max-width: 1400px; margin: 0 auto 60px;
+      padding: 0 40px;
+      overflow: hidden;
+      height: clamp(80px, 14vw, 150px);
+    }
+    .cases-title {
+      font-family: var(--font-heading);
+      font-size: clamp(100px, 18vw, 200px);
+      text-transform: uppercase;
+      line-height: 0.9;
+      color: var(--black);
+      /* Letters clipped at bottom 30% */
+      transform: translateY(20%);
+    }
+
+    .cases-track-wrapper {
+      position: relative;
+      overflow: visible;
+    }
+    .cases-track {
+      display: flex;
+      gap: 32px;
+      padding: 0 40px;
+      width: max-content;
+    }
+    .case-card {
+      width: clamp(320px, 30vw, 450px);
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      cursor: none;
+    }
+    .case-card-img {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .case-card-img-inner {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.6s;
+    }
+    .case-card:hover .case-card-img-inner { transform: scale(1.06); }
+
+    /* Different aspect ratios */
+    .cc-1 .case-card-img { aspect-ratio: 3/4; }
+    .cc-2 .case-card-img { aspect-ratio: 1/1; }
+    .cc-3 .case-card-img { aspect-ratio: 16/10; }
+    .cc-4 .case-card-img { aspect-ratio: 3/4; }
+
+    .cc-1 .case-card-img-inner { background: linear-gradient(135deg, #0a0a15, #1a1a2e, #2d1b4e); }
+    .cc-2 .case-card-img-inner { background: linear-gradient(135deg, var(--red), #8b0000); }
+    .cc-3 .case-card-img-inner { background: linear-gradient(135deg, #111, #2a2a2a); }
+    .cc-4 .case-card-img-inner { background: linear-gradient(160deg, #1a0000, #3d0000, #0a0a0a); }
+
+    .case-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,10,10,0.7) 0%, transparent 60%);
+    }
+    .case-card-name {
+      position: absolute; bottom: 20px; left: 20px; right: 20px;
+      font-family: var(--font-serif);
+      font-size: 22px; font-weight: 700;
+      color: var(--white);
+    }
+    .case-card-category {
+      font-family: var(--font-mono);
+      font-size: 10px; text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--grey);
+      margin-top: 10px;
+    }
+    .case-card-metric {
+      position: absolute; top: 16px; right: 16px;
+      font-family: var(--font-marker);
+      font-size: 24px;
+      color: var(--red);
+      transform: rotate(5deg);
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    }
+
+    /* ===== NUMBERS ===== */
+    .numbers {
+      background: var(--red);
+      color: var(--white);
+      padding: 120px 40px;
+      position: relative; overflow: hidden;
+    }
+    /* Grain on red */
+    .numbers::before {
+      content: '';
+      position: absolute; inset: 0;
+      pointer-events: none;
+      opacity: 0.06;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px;
+    }
+    .numbers-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      position: relative; z-index: 1;
+    }
+    .number-item { text-align: center; }
+    .number-value {
+      font-family: var(--font-heading);
+      font-size: clamp(60px, 10vw, 140px);
+      line-height: 1;
+    }
+    .number-label {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    /* ===== CTA ===== */
+    .cta {
+      background: var(--black);
+      color: var(--white);
+      padding: 200px 40px;
+      position: relative; overflow: hidden;
+      text-align: center;
+    }
+    .cta-content { position: relative; z-index: 2; max-width: 1000px; margin: 0 auto; }
+    .cta-title {
+      font-family: var(--font-heading);
+      font-size: clamp(50px, 10vw, 130px);
+      text-transform: uppercase;
+      line-height: 0.95;
+      margin-bottom: 32px;
+    }
+    .cta-annotation {
+      font-family: var(--font-marker);
+      font-size: clamp(18px, 3vw, 28px);
+      color: var(--red);
+      transform: rotate(-3deg);
+      display: inline-block;
+      margin-bottom: 48px;
+    }
+    .cta-email {
+      display: inline-block;
+      font-family: var(--font-serif);
+      font-size: clamp(20px, 3vw, 36px);
+      font-style: italic;
+      color: var(--white);
+      text-decoration: none;
+      border-bottom: 2px solid var(--red);
+      padding-bottom: 4px;
+      transition: color 0.3s;
+    }
+    .cta-email:hover { color: var(--red); }
+    .cta-socials {
+      margin-top: 40px;
+      display: flex; justify-content: center; gap: 32px;
+    }
+    .cta-socials a {
+      font-family: var(--font-mono);
+      font-size: 11px; text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .cta-socials a:hover { color: var(--acid); }
+
+    /* SVG arrow pointing to email */
+    .cta-arrow {
+      display: block;
+      margin: 24px auto;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: var(--black);
+      padding: 24px 40px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer-inner {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-logo {
+      font-family: var(--font-heading);
+      font-size: 20px; color: var(--white);
+      text-decoration: none; letter-spacing: 2px;
+    }
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: rgba(255,255,255,0.15);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) {
-      .manifest-container { grid-template-columns: 1fr; }
-      .manifest-collage { min-height: 350px; margin-top: 40px; }
+      .manifest-inner { grid-template-columns: 1fr; }
+      .manifest-photo { max-width: 400px; margin: 0 auto 40px; }
       .services-grid { grid-template-columns: 1fr 1fr; }
-      .sc-1 { grid-row: span 1; } .sc-4 { grid-column: span 1; }
-      .cases-masonry { grid-template-columns: 1fr 1fr; grid-auto-rows: auto; }
-      .ci-a, .ci-b, .ci-c, .ci-d, .ci-e { grid-column: auto; grid-row: auto; min-height: 280px; }
-      .results-row { grid-template-columns: 1fr 1fr; }
+      .sc-1 { grid-row: span 1; }
+      .sc-4 { grid-column: span 1; }
+      .numbers-inner { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 768px) {
-      .section-padding { padding: 80px 20px; }
       .hero { padding: 100px 20px 60px; }
+      .hero-meta { display: none; }
+      .hero-photo { display: none; }
       .manifest { padding: 80px 20px; }
       .services { padding: 80px 20px; }
       .services-grid { grid-template-columns: 1fr; }
-      .sc-1, .sc-4 { grid-column: auto; grid-row: auto; }
-      .cases { padding: 80px 20px; }
-      .cases-masonry { grid-template-columns: 1fr; }
-      .results { padding: 80px 20px; }
-      .results-row { grid-template-columns: 1fr; }
-      .result-item { transform: rotate(0deg) !important; }
+      .sc-1, .sc-4 { grid-row: auto; grid-column: auto; }
+      .cases { padding: 80px 0; }
+      .numbers { padding: 80px 20px; }
+      .numbers-inner { grid-template-columns: 1fr 1fr; }
       .cta { padding: 120px 20px; }
-      .footer-inner { flex-direction: column; gap: 16px; }
-      .graffiti-tag, .spray-circle, .stencil, .drip, .hero-spray-1, .hero-spray-2 { display: none; }
+      .footer-inner { flex-direction: column; gap: 12px; }
+      .manifest-annotation { display: none; }
+      .services-annotation { display: none; }
     }
     @media (max-width: 480px) {
-      .results-row { grid-template-columns: 1fr; }
+      .numbers-inner { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<div class="noise"></div>
-
-<!-- Loader -->
-<div class="loader" id="loader">
-  <div class="loader-text">TWO TAP</div>
-</div>
-
 <!-- Cursor -->
-<div class="cursor-ring" id="cursor-ring"></div>
-<div class="cursor-spray" id="cursor-spray"></div>
+<div class="cursor" id="cursor"></div>
 
 <!-- Nav -->
 <nav class="nav">
   <a href="#" class="nav-logo">TWO TAP</a>
-  <div class="nav-right">
+  <div style="display:flex;align-items:center;gap:32px;">
     <ul class="nav-links">
-      <li><a href="#about">О нас</a></li>
+      <li><a href="#manifest">О нас</a></li>
       <li><a href="#services">Услуги</a></li>
       <li><a href="#cases">Кейсы</a></li>
     </ul>
@@ -720,348 +639,208 @@
 
 <!-- ==================== HERO ==================== -->
 <section class="hero" id="hero">
-  <div class="red-glow rg-1"></div>
-  <div class="red-glow rg-2"></div>
+  <!-- Red glows -->
+  <div class="red-glow" style="width:400px;height:300px;top:-50px;right:-30px;"></div>
+  <div class="red-glow" style="width:250px;height:200px;bottom:20%;left:-60px;opacity:0.15;"></div>
+  <div class="red-glow" style="width:200px;height:200px;top:40%;left:40%;opacity:0.1;"></div>
 
-  <!-- Spray paint circle -->
-  <div class="hero-spray-1"></div>
-  <!-- Big ghost graffiti -->
-  <div class="hero-spray-2">★</div>
+  <!-- Photo collage -->
+  <div class="hero-collage">
+    <div class="hero-photo hp-1" data-speed="0.8"><div class="hp-inner" style="background:linear-gradient(145deg,#1a1a2e,#16213e);"></div></div>
+    <div class="hero-photo hp-2" data-speed="1.2"><div class="hp-inner" style="background:linear-gradient(135deg,var(--red),#8b0000);"></div></div>
+    <div class="hero-photo hp-3" data-speed="0.6"><div class="hp-inner" style="background:linear-gradient(135deg,#2d1b4e,#1a0a2e);"></div></div>
+    <div class="hero-photo hp-4" data-speed="1.4"><div class="hp-inner" style="background:linear-gradient(160deg,#0d1117,#333);"></div></div>
+  </div>
 
-  <!-- SVG graffiti arrow -->
-  <svg class="hero-arrow-svg" style="top:20%;left:6%;" width="160" height="80" viewBox="0 0 160 80" fill="none">
-    <path class="graffiti-draw" d="M10 60 Q40 10 80 40 Q120 70 150 20" stroke="#E60012" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <path class="graffiti-draw" d="M140 18 L152 22 L145 32" stroke="#E60012" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Corner meta -->
+  <div class="hero-meta hero-meta--tl">Москва</div>
+  <div class="hero-meta hero-meta--tr">2024</div>
+  <div class="hero-meta hero-meta--bl">Креатив — Стратегия — Продакшн</div>
+
+  <!-- SVG arrow pointing to CTA area -->
+  <svg class="hero-arrow svg-draw" width="140" height="70" viewBox="0 0 140 70" fill="none">
+    <path d="M10 55 Q40 10 80 35 Q110 55 130 20" stroke="#E60012" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M118 10 L132 20 L120 28" stroke="#E60012" stroke-width="2.5" stroke-linecap="round"/>
   </svg>
 
-  <!-- Paint drips -->
-  <div class="drip" style="top:0;left:15%;height:120px;"></div>
-  <div class="drip drip--acid" style="top:0;right:22%;height:80px;"></div>
-  <div class="drip drip--cyan" style="top:0;left:45%;height:60px;"></div>
-  <div class="drip" style="top:0;right:10%;height:100px;"></div>
-  <div class="drip drip--pink" style="top:0;left:70%;height:45px;"></div>
+  <!-- Title -->
+  <h1 class="hero-title glitch" data-text="TWO TAP" id="hero-title">TWO TAP</h1>
 
-  <!-- Spray splatter -->
-  <div class="spray-dots" style="top:15%;right:20%;">
-    <span style="width:4px;height:4px;top:0;left:0;"></span>
-    <span style="width:3px;height:3px;top:8px;left:12px;"></span>
-    <span style="width:5px;height:5px;top:-4px;left:20px;"></span>
-    <span style="width:2px;height:2px;top:14px;left:6px;"></span>
-    <span style="width:6px;height:6px;top:4px;left:30px;"></span>
-    <span style="width:3px;height:3px;top:-8px;left:35px;"></span>
-    <span style="width:4px;height:4px;top:12px;left:42px;"></span>
-  </div>
-  <div class="spray-dots" style="bottom:25%;left:10%;">
-    <span style="width:5px;height:5px;top:0;left:0;background:var(--acid);"></span>
-    <span style="width:3px;height:3px;top:10px;left:15px;background:var(--acid);"></span>
-    <span style="width:4px;height:4px;top:-6px;left:25px;background:var(--acid);"></span>
-    <span style="width:2px;height:2px;top:8px;left:35px;background:var(--acid);"></span>
-  </div>
-
-  <!-- Graffiti tags scattered -->
-  <div class="graffiti-tag" style="top:30%;right:5%;font-size:40px;color:var(--acid);opacity:0.12;transform:rotate(12deg);">TT</div>
-  <div class="graffiti-tag" style="bottom:20%;left:3%;font-size:28px;color:var(--cyan);opacity:0.1;transform:rotate(-15deg);">★★★</div>
-
-  <!-- Spray circle -->
-  <div class="spray-circle" style="width:80px;height:80px;top:60%;right:15%;color:var(--acid);border:3px solid var(--acid);"></div>
-  <div class="spray-circle" style="width:50px;height:50px;top:18%;left:30%;color:var(--red);border:2px solid var(--red);"></div>
-
-  <!-- SVG cross-out -->
-  <svg class="spray-cross" style="top:65%;left:20%;" width="80" height="80" viewBox="0 0 80 80" fill="none">
-    <path class="graffiti-draw" d="M10 10 L70 70" stroke="#E60012" stroke-width="5" stroke-linecap="round"/>
-    <path class="graffiti-draw" d="M70 10 L10 70" stroke="#E60012" stroke-width="5" stroke-linecap="round"/>
-  </svg>
-
-  <!-- Stencil ghost text -->
-  <div class="stencil" style="bottom:5%;left:10%;font-size:100px;">AGENCY</div>
-
-  <div class="hero-content">
-    <h1 class="hero-title glitch" data-text="TWO TAP">
-      <span class="line"><span class="line-inner">TWO</span></span>
-      <span class="line"><span class="line-inner">TAP</span></span>
-    </h1>
-    <div class="hero-subtitle">рекламное агентство</div>
-    <div class="hero-meta">
-      <span>Москва</span><span>Креатив</span><span>Стратегия</span><span>Продакшн</span><span>© 2026</span>
-    </div>
-  </div>
+  <!-- Subtitle -->
+  <div class="hero-subtitle" id="hero-sub">рекламное агентство</div>
 </section>
 
+<!-- ==================== MARQUEE ==================== -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="marquee-text">СТРАТЕГИЯ &bull; КРЕАТИВ &bull; ПРОДАКШН &bull; КОНТЕНТ &bull; БРЕНДИНГ &bull; ПЕРФОРМАНС &bull;&nbsp;</span>
+    <span class="marquee-text">СТРАТЕГИЯ &bull; КРЕАТИВ &bull; ПРОДАКШН &bull; КОНТЕНТ &bull; БРЕНДИНГ &bull; ПЕРФОРМАНС &bull;&nbsp;</span>
+    <span class="marquee-text">СТРАТЕГИЯ &bull; КРЕАТИВ &bull; ПРОДАКШН &bull; КОНТЕНТ &bull; БРЕНДИНГ &bull; ПЕРФОРМАНС &bull;&nbsp;</span>
+  </div>
+</div>
+
 <!-- ==================== MANIFEST ==================== -->
-<section class="manifest" id="about">
-  <!-- Wall graffiti -->
-  <div class="manifest-graffiti-big">TWO TAP</div>
+<section class="manifest" id="manifest">
+  <!-- Red glow behind photo -->
+  <div class="red-glow" style="width:300px;height:300px;top:20%;left:5%;opacity:0.2;"></div>
 
-  <!-- Drips on dark bg -->
-  <div class="drip drip--white" style="top:0;left:25%;height:140px;"></div>
-  <div class="drip" style="top:0;right:15%;height:90px;"></div>
-  <div class="drip drip--acid" style="top:0;left:60%;height:60px;"></div>
+  <div class="manifest-inner">
+    <!-- Photo -->
+    <div class="manifest-photo" data-speed="0.7"></div>
 
-  <!-- SVG wavy underline -->
-  <svg class="graffiti" style="bottom:30%;left:5%;" width="200" height="40" viewBox="0 0 200 40" fill="none">
-    <path class="graffiti-draw" d="M5 20 Q30 5 55 20 Q80 35 105 20 Q130 5 155 20 Q180 35 195 20" stroke="#E60012" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Text -->
+    <div class="manifest-text">
+      <div class="manifest-quote">
+        [Placeholder заголовок манифеста. <span class="manifest-underline"><em>Ключевая фраза</em>
+          <svg class="svg-draw" viewBox="0 0 200 20" fill="none">
+            <path d="M5 15 Q30 5 55 15 Q80 25 105 15 Q130 5 155 15 Q180 25 195 15" stroke="#E60012" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </span> о позиционировании бренда и подходе агентства к рекламе.]
+      </div>
+
+      <!-- Handwritten annotation -->
+      <div class="manifest-annotation">↑ вот это главное</div>
+    </div>
+  </div>
+
+  <!-- SVG circle around something -->
+  <svg class="svg-draw" style="position:absolute;top:30%;right:10%;z-index:15;pointer-events:none;" width="200" height="80" viewBox="0 0 200 80" fill="none">
+    <ellipse cx="100" cy="40" rx="90" ry="35" transform="rotate(-3 100 40)" stroke="#E60012" stroke-width="2.5" stroke-linecap="round"/>
   </svg>
-
-  <!-- Spray dots -->
-  <div class="spray-dots" style="top:20%;right:10%;">
-    <span style="width:4px;height:4px;top:0;left:0;background:var(--cyan);"></span>
-    <span style="width:6px;height:6px;top:10px;left:18px;background:var(--cyan);"></span>
-    <span style="width:3px;height:3px;top:-5px;left:30px;background:var(--cyan);"></span>
-    <span style="width:5px;height:5px;top:15px;left:8px;background:var(--cyan);"></span>
-  </div>
-
-  <div class="graffiti-tag" style="bottom:10%;right:8%;font-size:60px;color:var(--red);opacity:0.06;transform:rotate(8deg);">★</div>
-
-  <div class="manifest-container">
-    <div class="manifest-text-area">
-      <div class="manifest-label section-label">// 001 — О нас</div>
-      <h2 class="manifest-quote">
-        [Placeholder <span class="red">заголовок.</span><br>
-        Вторая строка <span class="red">манифеста.]</span>
-      </h2>
-      <p class="manifest-body">
-        [Placeholder текст о компании. Описание агентства, его подхода и ценностей.
-        Два-три предложения, раскрывающие суть бренда и позиционирование
-        на рынке рекламных услуг.]
-      </p>
-    </div>
-    <div class="manifest-collage">
-      <div class="manifest-img mi-1"><div class="manifest-img-inner"></div></div>
-      <div class="manifest-img mi-2"><div class="manifest-img-inner"></div></div>
-      <div class="manifest-img mi-3"><div class="manifest-img-inner"></div></div>
-      <!-- Spray arrow on collage -->
-      <svg class="graffiti" style="top:45%;left:55%;" width="100" height="60" viewBox="0 0 100 60" fill="none">
-        <path class="graffiti-draw" d="M5 50 Q30 10 90 15" stroke="#E8FF00" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path class="graffiti-draw" d="M78 8 L92 15 L80 24" stroke="#E8FF00" stroke-width="3" fill="none" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
 </section>
 
 <!-- ==================== SERVICES ==================== -->
 <section class="services" id="services">
-  <!-- Drips -->
-  <div class="drip" style="top:0;left:30%;height:110px;"></div>
-  <div class="drip drip--acid" style="top:0;right:40%;height:70px;"></div>
-
-  <!-- Ghost stencil -->
-  <div class="stencil" style="top:15%;right:5%;font-size:140px;transform:rotate(5deg);">SERVICES</div>
-
-  <!-- Spray circle -->
-  <div class="spray-circle" style="width:120px;height:120px;bottom:10%;left:8%;color:var(--red);border:3px solid var(--red);"></div>
+  <!-- Red glows -->
+  <div class="red-glow" style="width:350px;height:250px;top:-30px;right:-40px;opacity:0.15;"></div>
+  <div class="red-glow" style="width:200px;height:200px;bottom:10%;left:-30px;opacity:0.12;"></div>
 
   <div class="services-header">
-    <div class="section-label">// 002 — Услуги</div>
     <h2 class="services-title">[PLACEHOLDER]</h2>
   </div>
 
   <div class="services-grid">
-    <div class="service-card sc-1" data-animate>
-      <div class="service-card-img">
-        <div class="service-card-img-inner" style="background:linear-gradient(180deg, #1a0505 0%, #3d0000 50%, #0a0a0a 100%);"></div>
-        <div class="service-card-img-overlay"></div>
-        <div class="service-card-glow"></div>
-      </div>
-      <div class="service-card-content">
-        <div class="service-card-num">01</div>
-        <div class="service-card-title">Креативная стратегия</div>
-        <div class="service-card-desc">[Placeholder описание услуги.]</div>
-      </div>
+    <div class="service-card sc-1">
+      <div class="service-card-glow"></div>
+      <div class="service-card-title">Креативная стратегия</div>
+      <div class="service-card-desc">[Placeholder описание услуги]</div>
     </div>
-    <div class="service-card" data-animate>
-      <div class="service-card-img">
-        <div class="service-card-img-inner" style="background:linear-gradient(135deg, #111 0%, #2a2a2a 100%);"></div>
-        <div class="service-card-img-overlay"></div>
-        <div class="service-card-glow"></div>
-      </div>
-      <div class="service-card-content">
-        <div class="service-card-num">02</div>
-        <div class="service-card-title">Контент-продакшн</div>
-        <div class="service-card-desc">[Placeholder описание услуги.]</div>
-      </div>
+    <div class="service-card">
+      <div class="service-card-glow"></div>
+      <div class="service-card-title">Контент-продакшн</div>
+      <div class="service-card-desc">[Placeholder описание услуги]</div>
     </div>
-    <div class="service-card" data-animate>
-      <div class="service-card-img">
-        <div class="service-card-img-inner" style="background:linear-gradient(135deg, var(--red) 0%, #4a0000 100%);"></div>
-        <div class="service-card-img-overlay"></div>
-        <div class="service-card-glow"></div>
-      </div>
-      <div class="service-card-content">
-        <div class="service-card-num">03</div>
-        <div class="service-card-title">Influencer-маркетинг</div>
-        <div class="service-card-desc">[Placeholder описание услуги.]</div>
-      </div>
+    <div class="service-card">
+      <div class="service-card-glow"></div>
+      <div class="service-card-title">Influencer-маркетинг</div>
+      <div class="service-card-desc">[Placeholder описание услуги]</div>
     </div>
-    <div class="service-card sc-4" data-animate>
-      <div class="service-card-img">
-        <div class="service-card-img-inner" style="background:linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #16213e 100%);"></div>
-        <div class="service-card-img-overlay"></div>
-        <div class="service-card-glow"></div>
-      </div>
-      <div class="service-card-content">
-        <div class="service-card-num">04</div>
-        <div class="service-card-title">SMM и комьюнити</div>
-        <div class="service-card-desc">[Placeholder описание услуги.]</div>
-      </div>
+    <div class="service-card sc-4">
+      <div class="service-card-glow"></div>
+      <div class="service-card-title">SMM</div>
+      <div class="service-card-desc">[Placeholder описание услуги]</div>
     </div>
-    <div class="service-card" data-animate>
-      <div class="service-card-img">
-        <div class="service-card-img-inner" style="background:linear-gradient(135deg, #1a1a1a 0%, #333 100%);"></div>
-        <div class="service-card-img-overlay"></div>
-        <div class="service-card-glow"></div>
-      </div>
-      <div class="service-card-content">
-        <div class="service-card-num">05</div>
-        <div class="service-card-title">Перформанс</div>
-        <div class="service-card-desc">[Placeholder описание услуги.]</div>
-      </div>
+    <div class="service-card">
+      <div class="service-card-glow"></div>
+      <div class="service-card-title">Перформанс</div>
+      <div class="service-card-desc">[Placeholder описание услуги]</div>
     </div>
-    <div class="service-card" data-animate>
-      <div class="service-card-img">
-        <div class="service-card-img-inner" style="background:linear-gradient(135deg, #2d1b4e 0%, #1a0a2e 100%);"></div>
-        <div class="service-card-img-overlay"></div>
-        <div class="service-card-glow"></div>
-      </div>
-      <div class="service-card-content">
-        <div class="service-card-num">06</div>
-        <div class="service-card-title">Брендинг</div>
-        <div class="service-card-desc">[Placeholder описание услуги.]</div>
-      </div>
+    <div class="service-card">
+      <div class="service-card-glow"></div>
+      <div class="service-card-title">Брендинг</div>
+      <div class="service-card-desc">[Placeholder описание услуги]</div>
     </div>
   </div>
+
+  <!-- Rotated handwritten annotation -->
+  <div class="services-annotation">всё под ключ →</div>
 </section>
 
 <!-- ==================== CASES ==================== -->
 <section class="cases" id="cases">
-  <!-- Wall graffiti -->
-  <div class="graffiti-tag" style="top:5%;left:5%;font-size:80px;color:var(--acid);opacity:0.05;transform:rotate(-10deg);">★★</div>
-
-  <!-- Drips -->
-  <div class="drip drip--acid" style="top:0;left:20%;height:100px;"></div>
-  <div class="drip drip--cyan" style="top:0;right:30%;height:70px;"></div>
-  <div class="drip" style="top:0;left:55%;height:120px;"></div>
-
-  <!-- SVG scribble -->
-  <svg class="graffiti" style="top:8%;right:10%;" width="120" height="120" viewBox="0 0 120 120" fill="none">
-    <circle class="graffiti-draw" cx="60" cy="60" r="45" stroke="#00E5FF" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="8 12"/>
-  </svg>
-
   <div class="cases-header">
-    <div class="section-label" style="color:var(--red);">// 003 — Кейсы</div>
-    <h2 class="cases-title glitch" data-text="[PLACEHOLDER]">[PLACEHOLDER]</h2>
+    <h2 class="cases-title glitch" data-text="РАБОТЫ">РАБОТЫ</h2>
   </div>
 
-  <div class="cases-masonry">
-    <div class="case-item ci-a" data-animate>
-      <div class="case-item-bg"></div><div class="case-item-overlay"></div>
-      <div class="case-item-content">
-        <div class="case-item-title">[PROJECT NAME]</div>
-        <div class="case-item-cat">[Category / Category]</div>
+  <div class="cases-track-wrapper" id="cases-wrapper">
+    <div class="cases-track" id="cases-track">
+      <div class="case-card cc-1">
+        <div class="case-card-img"><div class="case-card-img-inner"></div><div class="case-card-overlay"></div>
+          <div class="case-card-name">[PROJECT NAME]</div>
+        </div>
+        <div class="case-card-category">[Category / Category]</div>
+        <div class="case-card-metric">×11 ROI</div>
       </div>
-      <div class="case-item-metric">[×N metric]</div>
-    </div>
-    <div class="case-item ci-b" data-animate>
-      <div class="case-item-bg"></div><div class="case-item-overlay"></div>
-      <div class="case-item-content">
-        <div class="case-item-title">[PROJECT NAME]</div>
-        <div class="case-item-cat">[Category]</div>
+      <div class="case-card cc-2">
+        <div class="case-card-img"><div class="case-card-img-inner"></div><div class="case-card-overlay"></div>
+          <div class="case-card-name">[PROJECT NAME]</div>
+        </div>
+        <div class="case-card-category">[Category]</div>
+        <div class="case-card-metric">+6.8%</div>
       </div>
-      <div class="case-item-metric">[+N% metric]</div>
-    </div>
-    <div class="case-item ci-c" data-animate>
-      <div class="case-item-bg"></div><div class="case-item-overlay"></div>
-      <div class="case-item-content">
-        <div class="case-item-title">[PROJECT NAME]</div>
-        <div class="case-item-cat">[Category / Category]</div>
+      <div class="case-card cc-3">
+        <div class="case-card-img"><div class="case-card-img-inner"></div><div class="case-card-overlay"></div>
+          <div class="case-card-name">[PROJECT NAME]</div>
+        </div>
+        <div class="case-card-category">[Category / Category]</div>
+        <div class="case-card-metric">50M+</div>
       </div>
-      <div class="case-item-metric">[NM metric]</div>
-    </div>
-    <div class="case-item ci-d" data-animate>
-      <div class="case-item-bg"></div><div class="case-item-overlay"></div>
-      <div class="case-item-content">
-        <div class="case-item-title">[PROJECT NAME]</div>
-        <div class="case-item-cat">[Category]</div>
+      <div class="case-card cc-4">
+        <div class="case-card-img"><div class="case-card-img-inner"></div><div class="case-card-overlay"></div>
+          <div class="case-card-name">[PROJECT NAME]</div>
+        </div>
+        <div class="case-card-category">[Category]</div>
+        <div class="case-card-metric">×5 ROI</div>
       </div>
-      <div class="case-item-metric">[×N metric]</div>
-    </div>
-    <div class="case-item ci-e" data-animate>
-      <div class="case-item-bg"></div><div class="case-item-overlay"></div>
-      <div class="case-item-content">
-        <div class="case-item-title">[PROJECT NAME]</div>
-        <div class="case-item-cat">[Category / Category / Category]</div>
-      </div>
-      <div class="case-item-metric">[+N% metric]</div>
     </div>
   </div>
 </section>
 
-<!-- ==================== RESULTS ==================== -->
-<section class="results" id="results">
-  <div class="results-bg-text">[PLACEHOLDER]</div>
-
-  <!-- Drips -->
-  <div class="drip" style="top:0;left:10%;height:80px;"></div>
-  <div class="drip drip--acid" style="top:0;right:25%;height:60px;"></div>
-
-  <!-- SVG spray arrow -->
-  <svg class="graffiti" style="top:15%;right:8%;" width="120" height="60" viewBox="0 0 120 60" fill="none">
-    <path class="graffiti-draw" d="M10 40 Q50 5 110 20" stroke="#E60012" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <path class="graffiti-draw" d="M98 12 L112 20 L100 30" stroke="#E60012" stroke-width="4" fill="none" stroke-linecap="round"/>
-  </svg>
-
-  <div class="results-container">
-    <div class="results-title">[PLACEHOLDER]</div>
-    <div class="results-row">
-      <div class="result-item" data-animate>
-        <div class="result-num"><span data-count="200">0</span>+</div>
-        <div class="result-label">[placeholder label]</div>
-      </div>
-      <div class="result-item" data-animate>
-        <div class="result-num">×<span data-count="8">0</span></div>
-        <div class="result-label">[placeholder label]</div>
-      </div>
-      <div class="result-item" data-animate>
-        <div class="result-num"><span data-count="50">0</span>M+</div>
-        <div class="result-label">[placeholder label]</div>
-      </div>
-      <div class="result-item" data-animate>
-        <div class="result-num"><span data-count="94">0</span>%</div>
-        <div class="result-label">[placeholder label]</div>
-      </div>
+<!-- ==================== NUMBERS ==================== -->
+<section class="numbers">
+  <div class="numbers-inner">
+    <div class="number-item">
+      <div class="number-value"><span data-count="200">0</span>+</div>
+      <div class="number-label">[placeholder]</div>
+    </div>
+    <div class="number-item">
+      <div class="number-value">×<span data-count="8">0</span></div>
+      <div class="number-label">[placeholder]</div>
+    </div>
+    <div class="number-item">
+      <div class="number-value"><span data-count="50">0</span>M+</div>
+      <div class="number-label">[placeholder]</div>
+    </div>
+    <div class="number-item">
+      <div class="number-value"><span data-count="94">0</span>%</div>
+      <div class="number-label">[placeholder]</div>
     </div>
   </div>
 </section>
 
 <!-- ==================== CTA ==================== -->
 <section class="cta" id="contact">
-  <!-- Drips on red -->
-  <div class="drip drip--white" style="top:0;left:20%;height:130px;"></div>
-  <div class="drip drip--acid" style="top:0;right:15%;height:90px;"></div>
-  <div class="drip drip--white" style="top:0;left:50%;height:60px;"></div>
-  <div class="drip drip--cyan" style="top:0;right:40%;height:110px;"></div>
-
-  <!-- Spray splatters -->
-  <div class="spray-dots" style="top:20%;left:10%;">
-    <span style="width:6px;height:6px;top:0;left:0;background:var(--white);opacity:0.3;"></span>
-    <span style="width:4px;height:4px;top:12px;left:20px;background:var(--white);opacity:0.3;"></span>
-    <span style="width:8px;height:8px;top:-5px;left:35px;background:var(--white);opacity:0.2;"></span>
-    <span style="width:3px;height:3px;top:10px;left:50px;background:var(--white);opacity:0.4;"></span>
-  </div>
-
-  <div class="graffiti-tag" style="top:10%;right:5%;font-size:100px;color:var(--acid);opacity:0.08;transform:rotate(10deg);">★</div>
+  <!-- Red glows -->
+  <div class="red-glow" style="width:300px;height:300px;top:-50px;left:-50px;opacity:0.2;"></div>
+  <div class="red-glow" style="width:250px;height:250px;bottom:-30px;right:-30px;opacity:0.15;"></div>
 
   <div class="cta-content">
-    <h2 class="cta-title" data-animate>
-      [PLACEHOLDER<br><span class="acid">ЗАГОЛОВОК CTA]</span>
-    </h2>
-    <div class="cta-sub">[placeholder подзаголовок]</div>
-    <a href="mailto:hello@two-tap.com" class="cta-btn" data-magnetic>
-      СВЯЗАТЬСЯ
-    </a>
-    <div class="cta-contacts">
-      <a href="mailto:hello@two-tap.com">hello@two-tap.com</a>
+    <h2 class="cta-title">[PLACEHOLDER<br>ЗАГОЛОВОК CTA]</h2>
+
+    <div class="cta-annotation">напишите нам →</div>
+
+    <!-- SVG arrow to email -->
+    <svg class="cta-arrow svg-draw" width="120" height="60" viewBox="0 0 120 60" fill="none">
+      <path d="M10 50 Q40 5 100 20" stroke="#E60012" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M88 10 L102 20 L90 30" stroke="#E60012" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+
+    <a href="mailto:hello@two-tap.com" class="cta-email" data-magnetic>hello@two-tap.com</a>
+
+    <div class="cta-socials">
       <a href="#">telegram</a>
       <a href="#">instagram</a>
+      <a href="#">+7 (___) ___-__-__</a>
     </div>
   </div>
 </section>
@@ -1070,177 +849,232 @@
 <footer class="footer">
   <div class="footer-inner">
     <a href="#" class="footer-logo">TWO TAP</a>
-    <div class="footer-copy">© 2026 Two Tap.</div>
+    <div class="footer-copy">© 2026 Two Tap. Все права защищены.</div>
   </div>
 </footer>
 
 
 <!-- ==================== SCRIPTS ==================== -->
 <script>
-  // ===== LOADER =====
-  const loader = document.getElementById('loader');
-  setTimeout(() => {
-    gsap.to(loader, {
-      clipPath: 'inset(0 0 100% 0)', duration: 0.9, ease: 'power4.inOut',
-      onComplete: () => { loader.style.display = 'none'; startHero(); }
-    });
-  }, 1000);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-  // ===== CURSOR =====
-  const ring = document.getElementById('cursor-ring');
-  const spray = document.getElementById('cursor-spray');
-  let mx = 0, my = 0, rx = 0, ry = 0, sx = 0, sy = 0;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  (function cursorLoop() {
-    rx += (mx - rx) * 0.1; ry += (my - ry) * 0.1;
-    sx += (mx - sx) * 0.3; sy += (my - sy) * 0.3;
-    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-    spray.style.left = sx + 'px'; spray.style.top = sy + 'px';
-    requestAnimationFrame(cursorLoop);
-  })();
-  document.querySelectorAll('a, button, .service-card, .case-item, [data-magnetic]').forEach(el => {
-    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
-    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+// ===== CURSOR =====
+const cursor = document.getElementById('cursor');
+let cx = 0, cy = 0;
+document.addEventListener('mousemove', e => { cx = e.clientX; cy = e.clientY; });
+gsap.ticker.add(() => {
+  gsap.set(cursor, { x: cx, y: cy, xPercent: -50, yPercent: -50, duration: 0.3 });
+});
+document.querySelectorAll('a, button, .service-card, .case-card, [data-magnetic]').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+// ===== MAGNETIC =====
+document.querySelectorAll('[data-magnetic]').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    const dx = (e.clientX - r.left - r.width / 2) * 0.2;
+    const dy = (e.clientY - r.top - r.height / 2) * 0.2;
+    gsap.to(btn, { x: dx, y: dy, duration: 0.3 });
   });
-
-  // ===== MAGNETIC =====
-  document.querySelectorAll('[data-magnetic]').forEach(btn => {
-    btn.addEventListener('mousemove', e => {
-      const r = btn.getBoundingClientRect();
-      btn.style.transform = `rotate(-2deg) translate(${(e.clientX - r.left - r.width/2)*0.2}px, ${(e.clientY - r.top - r.height/2)*0.2}px)`;
-    });
-    btn.addEventListener('mouseleave', () => { btn.style.transform = 'rotate(-2deg)'; });
+  btn.addEventListener('mouseleave', () => {
+    gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
   });
+});
 
-  // ===== HERO =====
-  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-  gsap.set('.hero-title .line-inner', { y: '110%' });
-  gsap.set('.hero-subtitle, .hero-meta, .hero-spray-1, .hero-spray-2, .hero-arrow-svg, .spray-cross, .spray-dots, .graffiti-tag, .spray-circle, .drip', { opacity: 0 });
+// ===== HERO — LETTER-BY-LETTER =====
+const heroTitle = document.getElementById('hero-title');
+const heroText = heroTitle.textContent;
+heroTitle.innerHTML = '';
+heroTitle.setAttribute('data-text', heroText);
+heroText.split('').forEach(ch => {
+  const span = document.createElement('span');
+  span.className = 'letter';
+  span.textContent = ch === ' ' ? '\u00A0' : ch;
+  heroTitle.appendChild(span);
+});
 
-  function startHero() {
-    const tl = gsap.timeline();
-    tl.to('.hero-title .line-inner', { y: 0, duration: 1.2, ease: 'power4.out', stagger: 0.12 }, 0)
-      .to('.hero-subtitle', { opacity: 1, duration: 0.6 }, 0.5)
-      .to('.hero-meta', { opacity: 1, duration: 0.5 }, 0.7)
-      .to('.drip', { opacity: 1, stagger: 0.05, duration: 0.3 }, 0.4)
-      .to('.spray-dots', { opacity: 1, stagger: 0.08, duration: 0.4 }, 0.8)
-      .to('.graffiti-tag', { opacity: 1, stagger: 0.1, duration: 0.3 }, 0.9)
-      .to('.spray-circle', { opacity: 0.4, stagger: 0.1, duration: 0.4 }, 0.9)
-      .to('.hero-spray-1', { opacity: 0.15, duration: 0.6 }, 0.6)
-      .to('.hero-spray-2', { opacity: 0.08, duration: 0.6 }, 0.7)
-      .to('.hero-arrow-svg', { opacity: 1, duration: 0.5 }, 1)
-      .to('.spray-cross', { opacity: 1, duration: 0.4 }, 1.1);
+// Initial states
+gsap.set('.hero-subtitle', { opacity: 0, y: 20 });
+gsap.set('.hero-meta', { opacity: 0 });
+gsap.set('.hero-photo', { opacity: 0, scale: 0.85 });
+gsap.set('.hero-arrow', { opacity: 0 });
 
-    // Glitch
-    setTimeout(() => {
-      document.querySelector('.hero-title').classList.add('active');
-      setTimeout(() => document.querySelector('.hero-title').classList.remove('active'), 400);
-    }, 1600);
+// Animate
+const heroTL = gsap.timeline({ delay: 0.3 });
+heroTL
+  .to('.hero-title .letter', {
+    y: 0, opacity: 1, duration: 0.8, ease: 'power4.out',
+    stagger: 0.05
+  })
+  .add(() => {
+    heroTitle.classList.add('active');
+    setTimeout(() => heroTitle.classList.remove('active'), 400);
+  }, 0.6)
+  .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.6 }, 0.5)
+  .to('.hero-meta', { opacity: 1, duration: 0.5, stagger: 0.1 }, 0.7)
+  .to('.hero-photo', { opacity: 1, scale: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out' }, 0.4)
+  .to('.hero-arrow', { opacity: 1, duration: 0.5 }, 1);
 
-    // Animate SVG graffiti lines drawing
-    document.querySelectorAll('.graffiti-draw').forEach(path => {
-      const len = path.getTotalLength();
-      path.style.strokeDasharray = len;
-      path.style.strokeDashoffset = len;
-      gsap.to(path, { strokeDashoffset: 0, duration: 1.5, ease: 'power2.out', delay: 1.2 });
-    });
-  }
+// ===== SVG LINE DRAW ON SCROLL =====
+document.querySelectorAll('.svg-draw').forEach(svg => {
+  const paths = svg.querySelectorAll('path, ellipse, circle, line');
+  paths.forEach(p => {
+    const len = p.getTotalLength ? p.getTotalLength() : 300;
+    p.style.strokeDasharray = len;
+    p.style.strokeDashoffset = len;
 
-  // Smooth anchor
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      e.preventDefault();
-      const t = document.querySelector(a.getAttribute('href'));
-      if (t) gsap.to(window, { scrollTo: { y: t }, duration: 1.2, ease: 'power3.inOut' });
-    });
-  });
-
-  // ===== SCROLL ANIMATIONS =====
-
-  // Parallax red glows
-  gsap.utils.toArray('.red-glow').forEach((g, i) => {
-    gsap.to(g, { scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 }, y: -50 - i * 30 });
-  });
-
-  // Drips grow on scroll
-  gsap.utils.toArray('.drip').forEach(drip => {
-    gsap.from(drip, {
-      scrollTrigger: { trigger: drip.parentElement, start: 'top 90%' },
-      scaleY: 0, transformOrigin: 'top', duration: 1.2, ease: 'power2.out'
+    gsap.to(p, {
+      strokeDashoffset: 0,
+      duration: 1.5,
+      ease: 'power2.out',
+      scrollTrigger: { trigger: svg, start: 'top 80%' }
     });
   });
+});
 
-  // SVG lines draw on scroll (sections beyond hero)
-  gsap.utils.toArray('section .graffiti-draw').forEach(path => {
-    const len = path.getTotalLength();
-    path.style.strokeDasharray = len;
-    path.style.strokeDashoffset = len;
-    gsap.to(path, {
-      strokeDashoffset: 0, duration: 1.5, ease: 'power2.out',
-      scrollTrigger: { trigger: path, start: 'top 85%' }
-    });
+// ===== PHOTO PARALLAX =====
+document.querySelectorAll('.hero-photo').forEach(photo => {
+  const speed = parseFloat(photo.getAttribute('data-speed')) || 1;
+  gsap.to(photo, {
+    y: (speed - 1) * 100,
+    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 }
   });
+});
 
-  // Manifest
-  gsap.from('.manifest-quote', { scrollTrigger: { trigger: '.manifest', start: 'top 70%' }, opacity: 0, y: 60, duration: 1, ease: 'power3.out' });
-  gsap.from('.manifest-body', { scrollTrigger: { trigger: '.manifest', start: 'top 65%' }, opacity: 0, y: 30, duration: 0.8, delay: 0.3 });
-  gsap.from('.manifest-img', {
-    scrollTrigger: { trigger: '.manifest-collage', start: 'top 80%' },
-    opacity: 0, scale: 0.8, rotation: gsap.utils.random(-10, 10),
-    duration: 0.7, stagger: 0.15, ease: 'power3.out'
-  });
+// ===== MANIFEST =====
+gsap.from('.manifest-quote', {
+  scrollTrigger: { trigger: '.manifest', start: 'top 70%' },
+  opacity: 0, y: 60, duration: 1, ease: 'power3.out'
+});
+gsap.from('.manifest-photo', {
+  scrollTrigger: { trigger: '.manifest', start: 'top 75%' },
+  opacity: 0, scale: 0.9, rotation: -4, duration: 0.8, ease: 'power3.out'
+});
+gsap.from('.manifest-annotation', {
+  scrollTrigger: { trigger: '.manifest-text', start: 'top 60%' },
+  opacity: 0, y: 20, duration: 0.6, delay: 0.5
+});
 
-  // Services
-  gsap.from('.services-title', { scrollTrigger: { trigger: '.services', start: 'top 75%' }, opacity: 0, y: 60, duration: 0.8, ease: 'power3.out' });
-  gsap.from('.service-card', { scrollTrigger: { trigger: '.services-grid', start: 'top 80%' }, opacity: 0, y: 50, duration: 0.6, stagger: 0.1, ease: 'power3.out' });
+// ===== SERVICES =====
+gsap.from('.services-title', {
+  scrollTrigger: { trigger: '.services', start: 'top 75%' },
+  opacity: 0, y: 60, duration: 0.8, ease: 'power3.out'
+});
+gsap.from('.service-card', {
+  scrollTrigger: { trigger: '.services-grid', start: 'top 80%' },
+  opacity: 0, y: 50, duration: 0.6, stagger: 0.1, ease: 'power3.out'
+});
 
-  // Cases
-  gsap.from('.cases-title', {
-    scrollTrigger: { trigger: '.cases', start: 'top 75%' },
-    opacity: 0, y: 50, duration: 0.8, ease: 'power3.out',
-    onComplete: () => {
-      const el = document.querySelector('.cases-title');
-      el.classList.add('active');
-      setTimeout(() => el.classList.remove('active'), 400);
+// ===== CASES — HORIZONTAL SCROLL =====
+const casesTrack = document.getElementById('cases-track');
+const casesWrapper = document.getElementById('cases-wrapper');
+
+function setupHorizontalScroll() {
+  const scrollAmount = casesTrack.scrollWidth - window.innerWidth;
+  if (scrollAmount <= 0) return;
+
+  gsap.to(casesTrack, {
+    x: -scrollAmount,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: casesWrapper,
+      start: 'top 20%',
+      end: () => '+=' + scrollAmount,
+      pin: true,
+      scrub: 1,
+      invalidateOnRefresh: true
     }
   });
-  gsap.from('.case-item', { scrollTrigger: { trigger: '.cases-masonry', start: 'top 80%' }, opacity: 0, y: 60, scale: 0.95, duration: 0.7, stagger: 0.12, ease: 'power3.out' });
+}
+setupHorizontalScroll();
 
-  // Results
-  gsap.from('.results-title', { scrollTrigger: { trigger: '.results', start: 'top 75%' }, opacity: 0, y: 50, duration: 0.8 });
-  gsap.from('.result-item', { scrollTrigger: { trigger: '.results-row', start: 'top 80%' }, opacity: 0, y: 40, duration: 0.6, stagger: 0.1, ease: 'power3.out' });
-
-  // Count-up
-  document.querySelectorAll('[data-count]').forEach(el => {
-    const target = parseInt(el.getAttribute('data-count'));
-    ScrollTrigger.create({
-      trigger: el, start: 'top 88%', once: true,
-      onEnter: () => {
-        let val = 0; const inc = target / 45;
-        const timer = setInterval(() => { val += inc; if (val >= target) { val = target; clearInterval(timer); } el.textContent = Math.round(val); }, 30);
-      }
-    });
-  });
-
-  // CTA
-  gsap.from('.cta-title', { scrollTrigger: { trigger: '.cta', start: 'top 70%' }, opacity: 0, y: 60, duration: 1, ease: 'power3.out' });
-  gsap.from('.cta-btn', { scrollTrigger: { trigger: '.cta', start: 'top 60%' }, opacity: 0, y: 30, rotation: -8, duration: 0.7, delay: 0.4 });
-
-  // Tilt on hover
-  document.querySelectorAll('.service-card, .case-item').forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      card.style.transform = `perspective(600px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
-    });
-    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
-  });
-
-  // Reduced motion
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    ScrollTrigger.getAll().forEach(st => st.kill());
+gsap.from('.cases-title', {
+  scrollTrigger: { trigger: '.cases', start: 'top 75%' },
+  opacity: 0, y: 50, duration: 0.8, ease: 'power3.out',
+  onComplete: () => {
+    const el = document.querySelector('.cases-title');
+    el.classList.add('active');
+    setTimeout(() => el.classList.remove('active'), 400);
   }
+});
+
+// ===== NUMBERS — COUNT UP =====
+document.querySelectorAll('[data-count]').forEach(el => {
+  const target = parseInt(el.getAttribute('data-count'));
+  ScrollTrigger.create({
+    trigger: el, start: 'top 88%', once: true,
+    onEnter: () => {
+      gsap.to({ val: 0 }, {
+        val: target, duration: 1.5, ease: 'power2.out',
+        onUpdate: function () { el.textContent = Math.round(this.targets()[0].val); }
+      });
+    }
+  });
+});
+
+gsap.from('.number-item', {
+  scrollTrigger: { trigger: '.numbers', start: 'top 75%' },
+  opacity: 0, y: 40, duration: 0.7, stagger: 0.12, ease: 'power3.out'
+});
+
+// ===== CTA =====
+gsap.from('.cta-title', {
+  scrollTrigger: { trigger: '.cta', start: 'top 70%' },
+  opacity: 0, y: 60, duration: 1, ease: 'power3.out'
+});
+gsap.from('.cta-annotation', {
+  scrollTrigger: { trigger: '.cta', start: 'top 60%' },
+  opacity: 0, y: 20, rotation: -10, duration: 0.7, delay: 0.3
+});
+gsap.from('.cta-email', {
+  scrollTrigger: { trigger: '.cta', start: 'top 55%' },
+  opacity: 0, y: 30, duration: 0.7, delay: 0.5
+});
+
+// ===== SECTION FADE-IN =====
+gsap.utils.toArray('section').forEach(sec => {
+  gsap.from(sec, {
+    scrollTrigger: { trigger: sec, start: 'top 90%' },
+    opacity: 0, y: 60, duration: 0.8, ease: 'power3.out'
+  });
+});
+
+// ===== RED GLOW PARALLAX =====
+gsap.utils.toArray('.red-glow').forEach((g, i) => {
+  gsap.to(g, {
+    scrollTrigger: { trigger: g.parentElement, start: 'top bottom', end: 'bottom top', scrub: 1 },
+    y: -40 - i * 20
+  });
+});
+
+// ===== SMOOTH ANCHOR =====
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) gsap.to(window, { scrollTo: { y: t }, duration: 1.2, ease: 'power3.inOut' });
+  });
+});
+
+// ===== TILT ON HOVER =====
+document.querySelectorAll('.service-card, .case-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    gsap.to(card, { rotateY: x * 6, rotateX: -y * 6, transformPerspective: 600, duration: 0.3 });
+  });
+  card.addEventListener('mouseleave', () => {
+    gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.5 });
+  });
+});
+
+// ===== REDUCED MOTION =====
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  ScrollTrigger.getAll().forEach(st => st.kill());
+}
 </script>
 </body>
 </html>
